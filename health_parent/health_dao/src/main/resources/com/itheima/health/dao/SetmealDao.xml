@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.health.dao.SetmealDao">
+    <!--新增-->
+    <insert id="add" parameterType="com.itheima.health.pojo.Setmeal">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_setmeal
+        (code,name,sex,age,helpCode,price,remark,attention,img)
+        values
+        (#{code},#{name},#{sex},#{age},#{helpCode},#{price},#{remark},#{attention},#{img})
+    </insert>
+
+    <!--绑定套餐和检查组多对多关系-->
+    <insert id="setSetmealAndCheckGroup" parameterType="hashmap">
+        insert into t_setmeal_checkgroup
+        (setmeal_id,checkgroup_id)
+        values
+        (#{setmeal_id},#{checkgroup_id})
+    </insert>
+
+    <select id="selectByCondition" parameterType="String" resultType="Setmeal">
+        select*from t_setmeal
+        <if test="value!=null and value.length>0">
+            where code=#{value} or name like concat('%',#{value},'%') or or helpCode = #{value}
+        </if>
+    </select>
+
+    <!--查询所有-->
+    <select id="findAll" resultType="com.itheima.health.pojo.Setmeal">
+        select * from t_setmeal
+    </select>
+
+
+    <select id="findById" parameterType="int" resultType="Setmeal">
+        select * from t_setmeal  where id=#{id}
+    </select>
+
+    <!--根据套餐id查询检查组信息-->
+    <select id="findCheckGroupListById" parameterType="int" resultType="CheckGroup">
+        SELECT*FROM t_checkgroup WHERE id IN (SELECT checkgroup_id FROM
+        t_setmeal_checkgroup WHERE setmeal_id=#{setmealId})
+    </select>
+
+    <!--根据检查组id查询检查项信息-->
+    <select id="findCheckItemListById" resultType="com.itheima.health.pojo.CheckItem">
+        select * from t_checkitem  where id
+        in (select checkitem_id from t_checkgroup_checkitem where checkgroup_id=#{id})
+    </select>
+
+    <select id="findSetmealCount" resultType="map">
+        select s.name,count(o.id) as value
+        from t_order o ,t_setmeal s
+        where o.setmeal_id = s.id
+        group by s.name
+    </select>
+
+    <select id="findGenderCount" resultType="map">
+SELECT g.sex name,COUNT(*) value FROM t_gender g,t_member m WHERE g.id=m.sex GROUP BY m.sex
+    </select>
+
+    <select id="findAgeCount" resultType="map">
+SELECT a.age name,COUNT(*) value FROM t_age a,t_member m WHERE a.id=m.birthday GROUP BY a.age;
+    </select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.health.dao.CheckGroupDao">
+
+    <!--新增检查组-->
+    <insert id="add" parameterType="com.itheima.health.pojo.CheckGroup">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into t_checkgroup(code,name,sex,helpCode,remark,attention)
+        values
+        (#{code},#{name},#{sex},#{helpCode},#{remark},#{attention})
+    </insert>
+    <!--设置检查组和检查项的关联关系-->
+    <insert id="setCheckGroupAndCheckItem" parameterType="hashmap">
+        insert into t_checkgroup_checkitem(checkgroup_id,checkitem_id)
+        values
+        (#{checkgroup_id},#{checkitem_id})
+    </insert>
+
+
+    <select id="selectByCondition" parameterType="string" resultType="CheckGroup">
+        select * from t_checkgroup
+        <if test="value!=null and value.length>0">
+            <!-- where code = #{value} or name like '%${value}%' or helpcode = #{value}-->
+            where code = #{value} or name like concat('%',#{value},'%') or helpcode = #{value}
+        </if>
+    </select>
+
+    <select id="findById" parameterType="int" resultType="CheckGroup">
+        select * from t_checkgroup where id = #{id}
+    </select>
+
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="int">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{id}
+    </select>
+
+    <delete id="deleteAssociation" parameterType="int">
+        delete from t_checkgroup_checkitem where checkgroup_id = #{id}
+    </delete>
+
+    <!--编辑-->
+    <update id="edit" parameterType="com.itheima.health.pojo.CheckGroup">
+        update t_checkgroup
+        <set>
+            <if test="name != null and name.length>0">
+                name = #{name},
+            </if>
+            <if test="sex != null and sex.length>0">
+                sex = #{sex},
+            </if>
+            <if test="code != null and code.length>0">
+                code = #{code},
+            </if>
+            <if test="helpCode != null and helpCode.length>0">
+                helpCode = #{helpCode},
+            </if>
+            <if test="attention != null and attention.length>0">
+                attention = #{attention},
+            </if>
+            <if test="remark != null and remark.length>0">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <select id="findAll" resultType="com.itheima.health.pojo.CheckGroup">
+        select * from t_checkgroup
+    </select>
+
+
+</mapper>

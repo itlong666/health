@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace="Dao接口的全限定名"
+-->
+<mapper namespace="com.itheima.health.dao.MenuDao">
+
+    <select id="findPage" parameterType="String" resultType="Menu">
+        select * from t_menu
+        <if test="value != null and value.length > 0">
+            where name like concat('%', #{value},'%')
+        </if>
+    </select>
+
+    <select id="getMasterMenuId" parameterType="String" resultType="int">
+     SELECT m.id FROM t_menu m,t_role r,t_role_menu rm WHERE r.id=rm.role_id AND m.id=rm.menu_id AND r.id
+=(SELECT r.id FROM t_user u,t_role r,t_user_role ur WHERE u.id=ur.user_id AND r.id=ur.role_id
+AND u.username=#{value}) AND m.level=1
+    </select>
+
+    <select id="getMasterMenu" parameterType="int" resultType="Map">
+SELECT m.path,m.name title,m.icon FROM t_menu m WHERE m.id=#{value}
+</select>
+
+    <select id="getChileMenu" parameterType="int" resultType="Map">
+SELECT m.path, m.name title,m.linkUrl FROM t_menu m WHERE m.parentMenuId=#{value}
+    </select>
+</mapper>
