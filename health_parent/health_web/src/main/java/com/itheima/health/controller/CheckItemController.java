@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/checkitem")
 public class CheckItemController {
-    @Autowired
+    @Reference
     private CheckItemService checkItemService;
 
 
@@ -38,7 +38,13 @@ public class CheckItemController {
         return new Result(true, MessageConstant.ADD_CHECKITEM_SUCCESS);
     }
 
-    //分页查询
+
+    /*
+     * @Description TODO 分页查询
+     * @Time 2020/7/5 21:36
+     * @param: queryPageBean.getPageSize是每页条数
+     * @return com.itheima.health.entity.PageResult
+     */
     @RequestMapping("/findPage")
     @PreAuthorize("hasAuthority('CHECKITEM_QUERY')")//权限校验
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {

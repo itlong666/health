@@ -37,7 +37,7 @@
         update t_checkitem
         <set>
             <if test="code!=null and code.length>0">
-                code=#{code},
+            code=#{code},
             </if>
             <if test="name!=null and name.length>0">
                 name=#{name},
